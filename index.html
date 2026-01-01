@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026: Operation Australia</title>
+    <style>
+        :root {
+            --bg: #121212;
+            --card: #1e1e1e;
+            --text: #e0e0e0;
+            --bronze: #cd7f32; 
+            --silver: #a0a0a0;
+            --gold: #ffd700;
+            --accent: #00d2ff; /* Aussie Blue */
+            --success: #4caf50;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 { margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); }
+        p.subtitle { color: #888; margin-bottom: 30px; font-size: 0.9rem; }
+
+        /* The Grid */
+        .bingo-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        /* Individual Cell */
+        .cell {
+            background-color: var(--card);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .cell:hover { transform: translateY(-3px); border-color: #666; }
+
+        /* Priority Highlights */
+        .cell.priority { border: 1px solid var(--accent); box-shadow: 0 0 5px rgba(0, 210, 255, 0.1); }
+        .cell.center { 
+            border: 2px solid var(--accent); 
+            background: linear-gradient(145deg, #1e1e1e, #0d2b36);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); 
+        }
+
+        /* Tier Styling */
+        .cell.tier-bronze { border-color: var(--bronze); background: linear-gradient(145deg, #1e1e1e, #3d2b1f); }
+        .cell.tier-silver { border-color: var(--silver); background: linear-gradient(145deg, #1e1e1e, #2c3e50); }
+        .cell.tier-gold { border-color: var(--gold); background: linear-gradient(145deg, #1e1e1e, #3d3511); box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+
+        .title { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; color: #fff; }
+        .meta { font-size: 0.7rem; color: #aaa; line-height: 1.3; margin-bottom: 8px;}
+        
+        .progress-bar-bg { width: 100%; height: 6px; background: #333; margin-top: auto; border-radius: 3px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+        
+        .stat-line { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
+        .current-val { font-size: 1.2rem; font-weight: bold; }
+        .target-val { font-size: 0.75rem; color: #666; margin-bottom: 2px; }
+        .medal-icon { position: absolute; top: 5px; right: 5px; font-size: 1.1rem; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        .modal {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        .tiers-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+            background: #111;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .tier-item { display: flex; flex-direction: column; font-size: 0.8rem; }
+        .tier-val { font-weight: bold; font-size: 1.1rem; margin-top: 5px; color: #fff; }
+
+        input[type="number"] {
+            padding: 15px;
+            font-size: 1.5rem;
+            width: 140px;
+            background: #111;
+            border: 2px solid #333;
+            color: white;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        input[type="number"]:focus { outline: none; border-color: var(--accent); }
+        
+        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn-cancel { background: transparent; color: #888; border: 1px solid #444; }
+        .btn-cancel:hover { background: #333; color: white; }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .bingo-board { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .cell { min-height: 100px; }
+            .cell.center { grid-column: span 2; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Operation Australia</h1>
+    <p class="subtitle">2026: The Final Plan</p>
+
+    <div class="bingo-board" id="grid">
+        </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2 id="modal-title" style="margin:0; color:white;">Goal Name</h2>
+            <p id="modal-desc" style="color:var(--accent); font-size:0.9rem; margin-top:5px;">Description</p>
+            
+            <div class="tiers-display">
+                <div class="tier-item" style="color:var(--bronze)">
+                    <span>BRONZE</span>
+                    <span class="tier-val" id="t-bronze">0</span>
+                </div>
+                <div class="tier-item" style="color:var(--silver)">
+                    <span>SILVER</span>
+                    <span class="tier-val" id="t-silver">0</span>
+                </div>
+                <div class="tier-item" style="color:var(--gold)">
+                    <span>GOLD</span>
+                    <span class="tier-val" id="t-gold">0</span>
+                </div>
+            </div>
+
+            <label style="color:#888; font-size:0.8rem;">TOTAL COMPLETED</label><br>
+            <input type="number" id="modal-input">
+            <div style="font-size:0.8rem; color:#666; margin-top:5px;" id="modal-unit">Units</div>
+            
+            <div class="btn-group">
+                <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn" onclick="saveProgress()">Save</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- 2026: OPERATION AUS (LOCAL STORAGE - FINAL) ---
+    const goals = [
+        // ROW 1
+        { id: 1, title: "Job Hunter", desc: "Apps Sent or Recruiters Contacted", unit: "Apps", bronze: 50, silver: 100, gold: 150, current: 0, priority: true },
+        { id: 2, title: "Sleep King", desc: "Nights > 7.5h sleep", unit: "Nights", bronze: 200, silver: 280, gold: 330, current: 0 },
+        { id: 3, title: "Posture Fix", desc: "Wall Angels / Stretches (Prevent Nerd Neck)", unit: "Sess", bronze: 50, silver: 150, gold: 300, current: 0 },
+        { id: 4, title: "Vacuuming", desc: "Full apartment vacuum", unit: "Times", bronze: 20, silver: 40, gold: 52, current: 0 },
+        { id: 5, title: "The Scribe", desc: "Total Chinese Characters Written", unit: "Chars", bronze: 250, silver: 500, gold: 1000, current: 0, priority: true },
+        
+        // ROW 2
+        { id: 6, title: "Coursera", desc: "Minutes Learned", unit: "Mins", bronze: 1000, silver: 2500, gold: 5000, current: 0 },
+        { id: 7, title: "Dental God", desc: "Days Flossed", unit: "Days", bronze: 150, silver: 250, gold: 350, current: 0 },
+        { id: 8, title: "Active Play", desc: "Bouldering/Badminton Visits", unit: "Visits", bronze: 12, silver: 24, gold: 48, current: 0 },
+        { id: 9, title: "Gratitude", desc: "Daily note (3 things)", unit: "Notes", bronze: 50, silver: 150, gold: 300, current: 0 },
+        { id: 10, title: "Reading Vol", desc: "Total Pages Read", unit: "Pages", bronze: 1500, silver: 3000, gold: 5000, current: 0 },
+
+        // ROW 3
+        { id: 11, title: "Road Runner", desc: "Km Run", unit: "km", bronze: 300, silver: 600, gold: 1000, current: 0 },
+        { id: 12, title: "Bed Maker", desc: "Mornings making the bed", unit: "Days", bronze: 100, silver: 200, gold: 300, current: 0 },
+        { id: 13, title: "OPERATION AUS", desc: "Visa, Flight, Job, Bank, Flat", unit: "Wins", bronze: 1, silver: 3, gold: 5, current: 0, center: true },
+        { id: 14, title: "Git Green", desc: "Days with a GitHub Commit", unit: "Days", bronze: 50, silver: 150, gold: 250, current: 0 },
+        { id: 15, title: "Aus Fund", desc: "Savings (DKK)", unit: "k DKK", bronze: 15, silver: 30, gold: 50, current: 0 },
+
+        // ROW 4
+        { id: 16, title: "Code Kata", desc: "LeetCode/HackerRank Solved", unit: "Probs", bronze: 10, silver: 30, gold: 60, current: 0 },
+        { id: 17, title: "Fam Updates", desc: "Photo/Voice Note Sent", unit: "Sent", bronze: 26, silver: 52, gold: 104, current: 0 },
+        { id: 18, title: "Sync Dates", desc: "Watch Party / Games / Video Dinner", unit: "Dates", bronze: 26, silver: 52, gold: 104, current: 0 },
+        { id: 19, title: "Cantonese", desc: "Audio Lesson / Speaking Practice", unit: "Sess", bronze: 30, silver: 60, gold: 100, current: 0 },
+        { id: 20, title: "Recovery", desc: "Stretching/Foam Roll", unit: "Sess", bronze: 50, silver: 100, gold: 200, current: 0 },
+
+        // ROW 5
+        { id: 21, title: "Deep Code", desc: "Timed Coding Hours", unit: "Hours", bronze: 100, silver: 250, gold: 500, current: 0, priority: true },
+        { id: 22, title: "The Walk", desc: "Go for a walk", unit: "Walks", bronze: 50, silver: 100, gold: 200, current: 0 },
+        { id: 23, title: "Supplements", desc: "Days taking Vitamins/Creatine", unit: "Days", bronze: 100, silver: 200, gold: 300, current: 0 },
+        { id: 24, title: "Meal Prep", desc: "Batch cooking sessions", unit: "Sess", bronze: 12, silver: 26, gold: 52, current: 0 },
+        { id: 25, title: "Inner Self", desc: "Journal Entries", unit: "Entries", bronze: 52, silver: 150, gold: 300, current: 0, priority: true }
+    ];
+
+    let activeId = null;
+
+    function init() {
+        // Load data from LocalStorage using a unique key
+        const savedData = localStorage.getItem('operation_aus_2026_final');
+        if (savedData) {
+            const parsed = JSON.parse(savedData);
+            goals.forEach((g, i) => {
+                const saved = parsed.find(p => p.id === g.id);
+                if(saved) g.current = saved.current;
+            });
+        }
+        renderGrid();
+    }
+
+    function renderGrid() {
+        const grid = document.getElementById('grid');
+        grid.innerHTML = '';
+
+        goals.forEach(goal => {
+            const el = document.createElement('div');
+            el.className = 'cell';
+            if (goal.priority) el.classList.add('priority');
+            if (goal.center) el.classList.add('center');
+
+            let tierIcon = '';
+            let progressColor = '#333';
+            
+            // Percentage for visual bar (capped at 100%)
+            let percent = Math.min(100, (goal.current / goal.gold) * 100);
+
+            // Tier Logic
+            if (goal.current >= goal.gold) {
+                el.classList.add('tier-gold');
+                tierIcon = '🥇';
+                progressColor = 'var(--gold)';
+            } else if (goal.current >= goal.silver) {
+                el.classList.add('tier-silver');
+                tierIcon = '🥈';
+                progressColor = 'var(--silver)';
+            } else if (goal.current >= goal.bronze) {
+                el.classList.add('tier-bronze');
+                tierIcon = '🥉';
+                progressColor = 'var(--bronze)';
+            } else {
+                if(goal.current > 0) progressColor = 'var(--accent)'; 
+            }
+
+            el.innerHTML = `
+                <div class="medal-icon">${tierIcon}</div>
+                <div>
+                    <div class="title">${goal.title}</div>
+                    <div class="meta">${goal.desc}</div>
+                </div>
+                
+                <div class="stat-line">
+                    <span class="current-val">${goal.current}</span>
+                    <span class="target-val">/ ${goal.gold} ${goal.unit}</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: ${percent}%; background-color: ${progressColor}"></div>
+                </div>
+            `;
+            
+            el.onclick = () => openModal(goal);
+            grid.appendChild(el);
+        });
+    }
+
+    function openModal(goal) {
+        activeId = goal.id;
+        document.getElementById('modal').style.display = 'flex';
+        document.getElementById('modal-title').innerText = goal.title;
+        document.getElementById('modal-desc').innerText = goal.desc;
+        document.getElementById('modal-unit').innerText = goal.unit;
+        
+        document.getElementById('t-bronze').innerText = goal.bronze;
+        document.getElementById('t-silver').innerText = goal.silver;
+        document.getElementById('t-gold').innerText = goal.gold;
+        
+        const input = document.getElementById('modal-input');
+        input.value = goal.current;
+        input.focus();
+        input.select();
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+        activeId = null;
+    }
+
+    function saveProgress() {
+        const val = parseFloat(document.getElementById('modal-input').value) || 0;
+        const goal = goals.find(g => g.id === activeId);
+        goal.current = val;
+        
+        // Save to unique LocalStorage key
+        localStorage.setItem('operation_aus_2026_final', JSON.stringify(goals));
+        renderGrid();
+        closeModal();
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('modal')) {
+            closeModal();
+        }
+    }
+
+    init();
+</script>
+</body>
+</html>
