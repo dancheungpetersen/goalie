@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026: Operation Australia</title>
+    <title>Bingo 2026</title>
     <style>
         :root {
             --bg: #121212;
@@ -12,8 +12,7 @@
             --bronze: #cd7f32; 
             --silver: #a0a0a0;
             --gold: #ffd700;
-            --accent: #00d2ff; /* Aussie Blue */
-            --success: #4caf50;
+            --accent: #00d2ff;
         }
 
         body {
@@ -31,7 +30,6 @@
         h1 { margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); }
         p.subtitle { color: #888; margin-bottom: 30px; font-size: 0.9rem; }
 
-        /* The Grid */
         .bingo-board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -40,7 +38,6 @@
             width: 100%;
         }
 
-        /* Individual Cell */
         .cell {
             background-color: var(--card);
             border: 1px solid #333;
@@ -56,8 +53,6 @@
         }
 
         .cell:hover { transform: translateY(-3px); border-color: #666; }
-
-        /* Priority Highlights */
         .cell.priority { border: 1px solid var(--accent); box-shadow: 0 0 5px rgba(0, 210, 255, 0.1); }
         .cell.center { 
             border: 2px solid var(--accent); 
@@ -65,7 +60,6 @@
             box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); 
         }
 
-        /* Tier Styling */
         .cell.tier-bronze { border-color: var(--bronze); background: linear-gradient(145deg, #1e1e1e, #3d2b1f); }
         .cell.tier-silver { border-color: var(--silver); background: linear-gradient(145deg, #1e1e1e, #2c3e50); }
         .cell.tier-gold { border-color: var(--gold); background: linear-gradient(145deg, #1e1e1e, #3d3511); box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
@@ -81,7 +75,6 @@
         .target-val { font-size: 0.75rem; color: #666; margin-bottom: 2px; }
         .medal-icon { position: absolute; top: 5px; right: 5px; font-size: 1.1rem; }
 
-        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -142,7 +135,6 @@
         .btn-cancel { background: transparent; color: #888; border: 1px solid #444; }
         .btn-cancel:hover { background: #333; color: white; }
 
-        /* Mobile */
         @media (max-width: 768px) {
             .bingo-board { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .cell { min-height: 100px; }
@@ -152,10 +144,10 @@
 </head>
 <body>
 
-    <h1>2026 Bingo</h1>
+    <h1>Bingo 2026</h1>
+    <p class="subtitle">Operation Australia</p>
 
-    <div class="bingo-board" id="grid">
-        </div>
+    <div class="bingo-board" id="grid"></div>
 
     <div class="modal-overlay" id="modal">
         <div class="modal">
@@ -163,18 +155,9 @@
             <p id="modal-desc" style="color:var(--accent); font-size:0.9rem; margin-top:5px;">Description</p>
             
             <div class="tiers-display">
-                <div class="tier-item" style="color:var(--bronze)">
-                    <span>BRONZE</span>
-                    <span class="tier-val" id="t-bronze">0</span>
-                </div>
-                <div class="tier-item" style="color:var(--silver)">
-                    <span>SILVER</span>
-                    <span class="tier-val" id="t-silver">0</span>
-                </div>
-                <div class="tier-item" style="color:var(--gold)">
-                    <span>GOLD</span>
-                    <span class="tier-val" id="t-gold">0</span>
-                </div>
+                <div class="tier-item" style="color:var(--bronze)"><span>BRONZE</span><span class="tier-val" id="t-bronze">0</span></div>
+                <div class="tier-item" style="color:var(--silver)"><span>SILVER</span><span class="tier-val" id="t-silver">0</span></div>
+                <div class="tier-item" style="color:var(--gold)"><span>GOLD</span><span class="tier-val" id="t-gold">0</span></div>
             </div>
 
             <label style="color:#888; font-size:0.8rem;">TOTAL COMPLETED</label><br>
@@ -189,7 +172,7 @@
     </div>
 
 <script>
-    // --- 2026: OPERATION AUS (LOCAL STORAGE - FINAL) ---
+    // --- BINGO 2026: FINAL v11 ---
     const goals = [
         // ROW 1
         { id: 1, title: "Job Hunter", desc: "Apps Sent or Recruiters Contacted", unit: "Apps", bronze: 50, silver: 100, gold: 150, current: 0, priority: true },
@@ -207,22 +190,22 @@
 
         // ROW 3
         { id: 11, title: "Road Runner", desc: "Km Run", unit: "km", bronze: 300, silver: 600, gold: 1000, current: 0 },
-        { id: 12, title: "Bed Maker", desc: "Mornings making the bed", unit: "Days", bronze: 100, silver: 200, gold: 300, current: 0 },
+        { id: 12, title: "Work Pauses", desc: "5-min away from screen/desk", unit: "Days", bronze: 50, silver: 150, gold: 220, current: 0 },
         { id: 13, title: "OPERATION AUS", desc: "Visa, Flight, Job, Bank, Flat", unit: "Wins", bronze: 1, silver: 3, gold: 5, current: 0, center: true },
-        { id: 14, title: "Git Green", desc: "Days with a GitHub Commit", unit: "Days", bronze: 50, silver: 150, gold: 250, current: 0 },
+        { id: 14, title: "Low Scroll", desc: "Days with < 2h Social Media", unit: "Days", bronze: 100, silver: 200, gold: 300, current: 0 },
         { id: 15, title: "Aus Fund", desc: "Savings (DKK)", unit: "k DKK", bronze: 15, silver: 30, gold: 50, current: 0 },
 
         // ROW 4
-        { id: 16, title: "Code Kata", desc: "LeetCode/HackerRank Solved", unit: "Probs", bronze: 10, silver: 30, gold: 60, current: 0 },
-        { id: 17, title: "Fam Updates", desc: "Photo/Voice Note Sent", unit: "Sent", bronze: 26, silver: 52, gold: 104, current: 0 },
+        { id: 16, title: "Eat Green", desc: "Days eating Fruit or Veg", unit: "Days", bronze: 100, silver: 200, gold: 300, current: 0 },
+        { id: 17, title: "Zone Clean", desc: "Dusting / Bathroom / Windows", unit: "Sess", bronze: 12, silver: 26, gold: 52, current: 0 },
         { id: 18, title: "Sync Dates", desc: "Watch Party / Games / Video Dinner", unit: "Dates", bronze: 26, silver: 52, gold: 104, current: 0 },
         { id: 19, title: "Cantonese", desc: "Audio Lesson / Speaking Practice", unit: "Sess", bronze: 30, silver: 60, gold: 100, current: 0 },
-        { id: 20, title: "Recovery", desc: "Stretching/Foam Roll", unit: "Sess", bronze: 50, silver: 100, gold: 200, current: 0 },
+        { id: 20, title: "Sober Weeks", desc: "Mon-Sun with 0 Alcohol", unit: "Weeks", bronze: 10, silver: 20, gold: 30, current: 0 },
 
         // ROW 5
-        { id: 21, title: "Deep Code", desc: "Timed Coding Hours", unit: "Hours", bronze: 100, silver: 250, gold: 500, current: 0, priority: true },
+        { id: 21, title: "Dev Master", desc: "Coding Hours + Kata Sessions", unit: "Hours", bronze: 50, silver: 150, gold: 300, current: 0, priority: true },
         { id: 22, title: "The Walk", desc: "Go for a walk", unit: "Walks", bronze: 50, silver: 100, gold: 200, current: 0 },
-        { id: 23, title: "Supplements", desc: "Days taking Vitamins/Creatine", unit: "Days", bronze: 100, silver: 200, gold: 300, current: 0 },
+        { id: 23, title: "Low Spend", desc: "Days Spending < 200 DKK", unit: "Days", bronze: 100, silver: 200, gold: 300, current: 0 },
         { id: 24, title: "Meal Prep", desc: "Batch cooking sessions", unit: "Sess", bronze: 12, silver: 26, gold: 52, current: 0 },
         { id: 25, title: "Inner Self", desc: "Journal Entries", unit: "Entries", bronze: 52, silver: 150, gold: 300, current: 0, priority: true }
     ];
@@ -230,8 +213,7 @@
     let activeId = null;
 
     function init() {
-        // Load data from LocalStorage using a unique key
-        const savedData = localStorage.getItem('operation_aus_2026_final');
+        const savedData = localStorage.getItem('bingo_2026_final_v11');
         if (savedData) {
             const parsed = JSON.parse(savedData);
             goals.forEach((g, i) => {
@@ -254,23 +236,14 @@
 
             let tierIcon = '';
             let progressColor = '#333';
-            
-            // Percentage for visual bar (capped at 100%)
             let percent = Math.min(100, (goal.current / goal.gold) * 100);
 
-            // Tier Logic
             if (goal.current >= goal.gold) {
-                el.classList.add('tier-gold');
-                tierIcon = '🥇';
-                progressColor = 'var(--gold)';
+                el.classList.add('tier-gold'); tierIcon = '🥇'; progressColor = 'var(--gold)';
             } else if (goal.current >= goal.silver) {
-                el.classList.add('tier-silver');
-                tierIcon = '🥈';
-                progressColor = 'var(--silver)';
+                el.classList.add('tier-silver'); tierIcon = '🥈'; progressColor = 'var(--silver)';
             } else if (goal.current >= goal.bronze) {
-                el.classList.add('tier-bronze');
-                tierIcon = '🥉';
-                progressColor = 'var(--bronze)';
+                el.classList.add('tier-bronze'); tierIcon = '🥉'; progressColor = 'var(--bronze)';
             } else {
                 if(goal.current > 0) progressColor = 'var(--accent)'; 
             }
@@ -281,7 +254,6 @@
                     <div class="title">${goal.title}</div>
                     <div class="meta">${goal.desc}</div>
                 </div>
-                
                 <div class="stat-line">
                     <span class="current-val">${goal.current}</span>
                     <span class="target-val">/ ${goal.gold} ${goal.unit}</span>
@@ -290,7 +262,6 @@
                     <div class="progress-bar-fill" style="width: ${percent}%; background-color: ${progressColor}"></div>
                 </div>
             `;
-            
             el.onclick = () => openModal(goal);
             grid.appendChild(el);
         });
@@ -302,11 +273,9 @@
         document.getElementById('modal-title').innerText = goal.title;
         document.getElementById('modal-desc').innerText = goal.desc;
         document.getElementById('modal-unit').innerText = goal.unit;
-        
         document.getElementById('t-bronze').innerText = goal.bronze;
         document.getElementById('t-silver').innerText = goal.silver;
         document.getElementById('t-gold').innerText = goal.gold;
-        
         const input = document.getElementById('modal-input');
         input.value = goal.current;
         input.focus();
@@ -322,17 +291,13 @@
         const val = parseFloat(document.getElementById('modal-input').value) || 0;
         const goal = goals.find(g => g.id === activeId);
         goal.current = val;
-        
-        // Save to unique LocalStorage key
-        localStorage.setItem('operation_aus_2026_final', JSON.stringify(goals));
+        localStorage.setItem('bingo_2026_final_v11', JSON.stringify(goals));
         renderGrid();
         closeModal();
     }
 
     window.onclick = function(event) {
-        if (event.target == document.getElementById('modal')) {
-            closeModal();
-        }
+        if (event.target == document.getElementById('modal')) closeModal();
     }
 
     init();
